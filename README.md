@@ -35,15 +35,15 @@ Docker4ExistingSite # Main repo
      
      ```
      [+] Running 10/10
-	 ⠿ Network drupal8_network    Created                                                                         0.0s
-	 ⠿ Volume "drupal8_vendor"    Created                                                                         0.0s
-	 ⠿ Volume "drupal8_modules"   Created                                                                         0.0s
-	 ⠿ Volume "drupal8_themes"    Created                                                                         0.0s
-	 ⠿ Volume "drupal8_profiles"  Created                                                                         0.0s
-	 ⠿ Volume "drupal8_sites"     Created                                                                         0.0s
-	 ⠿ Volume "drupal8_core"      Created                                                                         0.0s
-	 ⠿ Container drupal8-PMA      Started                                                                         2.4s
-	 ⠿ Container drupal8-db       Started                                                                         2.3s
+	 ⠿ Network drupal8_network    Created         0.0s
+	 ⠿ Volume "drupal8_vendor"    Created         0.0s
+	 ⠿ Volume "drupal8_modules"   Created         0.0s
+	 ⠿ Volume "drupal8_themes"    Created         0.0s
+	 ⠿ Volume "drupal8_profiles"  Created         0.0s
+	 ⠿ Volume "drupal8_sites"     Created         0.0s
+	 ⠿ Volume "drupal8_core"      Created         0.0s
+	 ⠿ Container drupal8-PMA      Started         2.4s
+	 ⠿ Container drupal8-db       Started         2.3s
 	 ⠿ Container drupal8          Started
      ```
   
@@ -56,12 +56,12 @@ Docker4ExistingSite # Main repo
    
      Last colunm **(Names) are containers**. It will return following results: 
 
-  <pre>
-    <b>CONTAINER ID   IMAGE              COMMAND            CREATED      STATUS                 PORTS                                    NAMES</b>
-       ID   drupal8-drupal   "/usr/sbin/apachectl…"    1 min ago    Up 2 mins       0.0.0.0:82->80/tcp, :::82->80/tcp                <b>drupal8</b>
-       ID   phpmyadmin:5.2.0   "/docker-entrypoint.…"  1 min ago    Up 2 mins       0.0.0.0:8080->80/tcp, :::8080->80/tcp           <b>drupal8-PMA</b>
-       ID   mariadb:10.5.9     "docker-entrypoint.s…"  1 min ago    Up 2 mins(healthy)   0.0.0.0:3307->3306/tcp, :::3307->3306/tcp   <b>drupal8-db</b>
-  </pre>
+<pre>
+  <b>CONTAINER ID   IMAGE         COMMAND            CREATED      STATUS                 PORTS                                    NAMES</b>
+    ID   drupal8-drupal   "/usr/sbin/apachectl…"    1 min ago    Up 2 mins       0.0.0.0:82->80/tcp, :::82->80/tcp              <b>drupal8</b>
+    ID   phpmyadmin:5.2.0   "/docker-entrypoint.…"  1 min ago    Up 2 mins       0.0.0.0:8080->80/tcp, :::8080->80/tcp          <b>drupal8-PMA</b>
+    ID   mariadb:10.5.9     "docker-entrypoint.s…"  1 min ago    Up 2 mins(healthy)   0.0.0.0:3307->3306/tcp, :::3307->3306/tcp <b>drupal8-db</b>
+</pre>
 
   4. To login specific container use below command
   
