@@ -1,0 +1,25 @@
+uuid: 52ab19d7-c703-45c2-a021-93be4afcdbc3
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - yg_glow
+_core:
+  default_config_hash: NDwadleLD3YVSbDUaakxyYZyINYtkFtOVGShfq4kWy8
+id: yg_glow_branding
+theme: yg_glow
+region: site_branding
+weight: 0
+provider: null
+plugin: system_branding_block
+settings:
+  id: system_branding_block
+  label: 'Site branding'
+  provider: system
+  label_display: '0'
+  use_site_logo: false
+  use_site_name: true
+  use_site_slogan: true
+visibility: {  }

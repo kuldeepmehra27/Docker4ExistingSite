@@ -1,0 +1,8 @@
+uuid: f2f60a50-0aaa-47ec-a34b-61eee036a89a
+langcode: und
+status: true
+dependencies: {  }
+name: var
+vid: var
+description: 'Description of var'
+weight: 0

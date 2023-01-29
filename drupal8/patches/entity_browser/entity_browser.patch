@@ -1,0 +1,201 @@
+diff -Nru intranet/modules/contrib/entity_browser/entity_browser.module ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/entity_browser.module
+--- intranet/modules/contrib/entity_browser/entity_browser.module	2019-02-14 21:50:18.000000000 +0530
++++ ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/entity_browser.module	2019-09-09 20:53:41.977631952 +0530
+@@ -10,6 +10,7 @@
+ use Drupal\Core\Url;
+ use Drupal\file\FileInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
++use \Drupal\Core\Entity\EntityForm;
+ 
+ /**
+  * Implements hook_help().
+@@ -74,14 +75,16 @@
+       $form['actions'][$key]['#access'] = $key == 'submit';
+     }
+     // Use Ajax.
+-    $form['actions']['submit']['#ajax'] = [
+-      'url' => Url::fromRoute('entity_browser.edit_form', ['entity_type' => $form_state->getFormObject()->getEntity()->getEntityTypeId(), 'entity' => $form_state->getFormObject()->getEntity()->id()]),
+-      'options' => [
+-        'query' => [
+-          'details_id' => \Drupal::request()->query->get('details_id'),
++    if ($form_state->getFormObject() instanceof EntityForm) {
++      $form['actions']['submit']['#ajax'] = [
++        'url' => Url::fromRoute('entity_browser.edit_form', ['entity_type' => $form_state->getFormObject()->getEntity()->getEntityTypeId(), 'entity' => $form_state->getFormObject()->getEntity()->id()]),
++        'options' => [
++          'query' => [
++            'details_id' => \Drupal::request()->query->get('details_id'),
++          ],
+         ],
+-      ],
+-    ];
++      ];
++    }
+   }
+ }
+ 
+diff -Nru intranet/modules/contrib/entity_browser/js/entity_browser.entity_reference.js ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/js/entity_browser.entity_reference.js
+--- intranet/modules/contrib/entity_browser/js/entity_browser.entity_reference.js	2019-02-14 21:50:18.000000000 +0530
++++ ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/js/entity_browser.entity_reference.js	2019-09-09 20:53:41.977631952 +0530
+@@ -19,6 +19,7 @@
+           stop: Drupal.entityBrowserEntityReference.entitiesReordered
+         });
+       });
++      
+       // The AJAX callback will give us a flag when we need to re-open the
+       // browser, most likely due to a "Replace" button being clicked.
+       if (typeof drupalSettings.entity_browser_reopen_browser !== 'undefined' &&  drupalSettings.entity_browser_reopen_browser) {
+diff -Nru intranet/modules/contrib/entity_browser/js/entity_browser.modal.js ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/js/entity_browser.modal.js
+--- intranet/modules/contrib/entity_browser/js/entity_browser.modal.js	2019-02-14 21:50:18.000000000 +0530
++++ ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/js/entity_browser.modal.js	2020-05-27 14:28:11.264824337 +0530
+@@ -23,6 +23,11 @@
+   Drupal.behaviors.entityBrowserModal = {
+     attach: function (context) {
+       _.each(drupalSettings.entity_browser.modal, function (instance) {
++
++        var $button = $(':input[data-uuid="' + instance.uuid + '"]', context);
++        if ($button.length == 0 || $button.hasClass('entity-browser-processed')) {
++          return;
++        }
+         _.each(instance.js_callbacks, function (callback) {
+           // Get the callback.
+           callback = callback.split('.');
+@@ -33,13 +38,16 @@
+           }
+ 
+           if (typeof fn === 'function') {
+-            $(':input[data-uuid="' + instance.uuid + '"]').not('.entity-browser-processed')
+-              .bind('entities-selected', fn).addClass('entity-browser-processed');
++            //$(':input[data-uuid="' + instance.uuid + '"]').not('.entity-browser-processed')
++             // .bind('entities-selected', fn).addClass('entity-browser-processed');
++             $button.bind('entities-selected', fn);
+           }
+         });
+         if (instance.auto_open) {
+-          $('input[data-uuid="' + instance.uuid + '"]').click();
++         // $('input[data-uuid="' + instance.uuid + '"]').click();
++          $button.click();
+         }
++        $button.addClass('entity-browser-processed');
+       });
+     }
+   };
+@@ -61,6 +69,79 @@
+         Drupal.entityBrowserModal.fluidDialog();
+       });
+ 
++      // Custom Added to remove paragraph on cross button dialog
++      $(document).on('dialogclose', '.ui-dialog', function (event, ui) {
++      
++        // For media on page type close button cancel button.
++        if($('.field--name-field-media-image div[data-drupal-selector="edit-field-media-image-form-entity-browser-entity-browser"]').length > 0 && $('.field--name-field-media-image div[data-drupal-selector="edit-field-media-image-form-actions"]').length > 0) {
++          var uuid = $(this).find("iframe").attr("src");
++          if(event.relatedTarget == null && typeof event.relatedTarget !== "undefined") {
++	          if(uuid !== ""){
++              var input_uuid = $('input[value="'+uuid+'"]');
++              $(input_uuid).parent().next().next().find('button[value="Cancel"]').mousedown();
++            }
++          }
++        }
++        
++        // For media on widget type close button cancel button.
++        if(($('.field--name-field-media-image-widget div[data-drupal-selector="edit-inline-entity-form-field-media-image-widget"]').length > 0 && $('.field--name-field-media-image-widget div[data-drupal-selector="edit-inline-entity-form-field-media-image-widget-form-actions"]').length > 0) || ($('.field--name-field-media-image-widget div[data-drupal-selector="edit-field-media-image-widget-form-entity-browser-entity-browser"]').length > 0 && $('.field--name-field-media-image-widget div[data-drupal-selector="edit-field-media-image-widget-form-actions"]').length > 0)) {
++          var uuid = $(this).find("iframe").attr("src");
++          if(event.relatedTarget == null && typeof event.relatedTarget !== "undefined") {
++	          if(uuid !== ""){
++              var input_uuid = $('input[value="'+uuid+'"]');
++              $(input_uuid).parent().next().next().find('button[value="Cancel"]').mousedown();
++            }
++          }
++        }
++   
++	      var uuid = $(this).find("iframe").attr("src");
++	      if(uuid !== '') {
++          var input_uuid = $('input[value="'+uuid+'"]');
++          var remove_button = $(input_uuid).closest('.panel-collapse').find('input:first').attr('value');
++          if(remove_button == '') {
++  	       $(input_uuid).closest('.paragraphs-subform').prev().
++            find('.paragraphs-actions button[value="Remove"]').mousedown();
++          }
++        }
++      });
++
++      $('div.ui-dialog').once().on("dialogbeforeclose", function (e, ui) {
++        /*if($("#load-progress-lock-screen").attr("showPopup") !== "1" &&
++            $("#load-progress-lock-screen").css("opacity") !== "1"){
++          if(!confirm("Are you sure you want to close without saving?")){
++            e.preventDefault();
++            return false;
++          }
++        }
++        else{
++          $("#load-progress-lock-screen").removeAttr("showPopup");
++        }*/
++        if(localStorage.getItem("selected-img") !== null){
++          localStorage.removeItem("selected-img");
++        }
++        jQuery("div.ui-widget-overlay").css("z-index", '998');
++        
++        let loader = parent.parent.document.getElementById("load-progress-lock-screen");
++        let attr_val = loader.getAttribute("show-popup");
++        let target_id = e.target.id;
++        if(attr_val !== "1" &&
++          $("#load-progress-lock-screen").css("opacity") !== "1"){
++          if(target_id.search("field-page-view-") !== -1) {
++            if(!confirm("Are you sure you want to close without saving?")){
++              e.preventDefault();
++              return false;
++            }
++          }
++        }
++        else{
++          //$("#load-progress-lock-screen").removeAttr("show-popup");
++          loader.removeAttribute("show-popup");
++        }
++      });
++      $("button.button--primary").on("click",function (e) {
++        $("#load-progress-lock-screen").attr("show-popup","1");
++      });
++
+       // Disable scrolling of the whole browser window to not interfere with the
+       // iframe scrollbar.
+       $(window).on({
+diff -Nru intranet/modules/contrib/entity_browser/js/entity_browser.view.js ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/js/entity_browser.view.js
+--- intranet/modules/contrib/entity_browser/js/entity_browser.view.js	2019-02-14 21:50:18.000000000 +0530
++++ ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/js/entity_browser.view.js	2019-09-09 20:53:41.977631952 +0530
+@@ -33,7 +33,6 @@
+             return ajax.beforeSubmit(form_values, element_settings, options);
+           };
+         }
+-
+         // Handle Enter key press in the views exposed form text fields: ensure
+         // that the correct button is used for the views exposed form submit.
+         // The default browser behavior for the Enter key press is to click the
+@@ -41,9 +40,9 @@
+         // example, ones added by the Tabs widget selector plugin.
+         views_instance.$exposed_form.once('submit-by-enter-key').find('input[type="text"]').each(function () {
+           $(this).on('keypress', function (event) {
+-            if (event.keyCode == 13) {
++            if (event.keyCode === 13) {
+               event.preventDefault();
+-              views_instance.$exposed_form.find('input[type="submit"]').first().click();
++              views_instance.$exposed_form.find('button[type="submit"]').first().click();
+             }
+           });
+         });
+diff -Nru intranet/modules/contrib/entity_browser/src/Plugin/Field/FieldWidget/EntityReferenceBrowserWidget.php ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/src/Plugin/Field/FieldWidget/EntityReferenceBrowserWidget.php
+--- intranet/modules/contrib/entity_browser/src/Plugin/Field/FieldWidget/EntityReferenceBrowserWidget.php	2019-02-14 21:50:18.000000000 +0530
++++ ../../rel-cd/source-intranet/intranet/modules/contrib/entity_browser/src/Plugin/Field/FieldWidget/EntityReferenceBrowserWidget.php	2019-09-09 20:53:41.981631863 +0530
+@@ -416,8 +416,11 @@
+   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+     $entities = empty($values['target_id']) ? [] : explode(' ', trim($values['target_id']));
+     $return = [];
+-    foreach ($entities as $entity) {
+-      $return[]['target_id'] = explode(':', $entity)[1];
++    foreach ($entities as $key => $entity) { 
++      $return[$key]['target_id'] = explode(':', $entity)[1];
++      $entity = \Drupal::entityTypeManager()->getStorage(explode(':', $entity)[0])->load(explode(':', $entity)[1]);
++        // Add the current revision ID.
++      $return[$key]['target_revision_id'] = $entity->getRevisionId();
+     }
+ 
+     return $return;

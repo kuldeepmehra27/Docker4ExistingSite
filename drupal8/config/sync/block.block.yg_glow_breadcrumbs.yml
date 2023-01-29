@@ -1,0 +1,22 @@
+uuid: 858c2e6e-0887-4f8c-84ad-68bd12c23be6
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - yg_glow
+_core:
+  default_config_hash: oXUb3JZR2WW5VOdw4HrhRicCsq51mCgLfRyvheG68ck
+id: yg_glow_breadcrumbs
+theme: yg_glow
+region: header
+weight: 0
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: Breadcrumbs
+  provider: system
+  label_display: '0'
+visibility: {  }

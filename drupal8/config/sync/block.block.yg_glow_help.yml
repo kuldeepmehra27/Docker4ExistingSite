@@ -1,0 +1,22 @@
+uuid: 64598510-3c0b-4e28-8673-8be722e7f6b9
+langcode: en
+status: true
+dependencies:
+  module:
+    - help
+  theme:
+    - yg_glow
+_core:
+  default_config_hash: 8I8iACSa0sKO3k3jlvUG1ge52rfcKX7USJAQYnzuBgg
+id: yg_glow_help
+theme: yg_glow
+region: content
+weight: -30
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: Help
+  provider: help
+  label_display: '0'
+visibility: {  }

@@ -1,0 +1,28 @@
+--- intranet_new/modules/contrib/paragraphs/src/Plugin/Field/FieldWidget/InlineParagraphsWidget.php	2019-02-20 18:53:51.000000000 +0530
++++ ../intranet/modules/contrib/paragraphs/src/Plugin/Field/FieldWidget/InlineParagraphsWidget.php	2020-06-29 21:44:12.000000000 +0530
+@@ -1310,7 +1310,10 @@
+         // A content entity form saves without any rebuild. It needs to set the
+         // language to update it in case of language change.
+         $langcode_key = $paragraphs_entity->getEntityType()->getKey('langcode');
+-        if ($paragraphs_entity->get($langcode_key)->value != $form_state->get('langcode')) {
++        //if ($paragraphs_entity->get($langcode_key)->value != $form_state->get('langcode')) {
++        $paragraphs_entity->set($langcode_key, $paragraphs_entity->get($langcode_key)->getLangcode());
++        if (!empty($form_state->get('langcode'))
++            && $paragraphs_entity->get($langcode_key)->value != $form_state->get('langcode')) {
+           // If a translation in the given language already exists, switch to
+           // that. If there is none yet, update the language.
+           if ($paragraphs_entity->hasTranslation($form_state->get('langcode'))) {
+--- intranet_new/modules/contrib/paragraphs/src/Plugin/Field/FieldWidget/ParagraphsWidget.php	2019-02-20 18:53:51.000000000 +0530
++++ ../intranet/modules/contrib/paragraphs/src/Plugin/Field/FieldWidget/ParagraphsWidget.php	2020-06-29 21:44:12.000000000 +0530
+@@ -2181,7 +2181,10 @@
+         // A content entity form saves without any rebuild. It needs to set the
+         // language to update it in case of language change.
+         $langcode_key = $paragraphs_entity->getEntityType()->getKey('langcode');
+-        if ($paragraphs_entity->get($langcode_key)->value != $form_state->get('langcode')) {
++        //if ($paragraphs_entity->get($langcode_key)->value != $form_state->get('langcode')) {
++	$paragraphs_entity->set($langcode_key, $paragraphs_entity->get($langcode_key)->getLangcode());
++        if (!empty($form_state->get('langcode'))
++          && $paragraphs_entity->get($langcode_key)->value != $form_state->get('langcode')) {
+           // If a translation in the given language already exists, switch to
+           // that. If there is none yet, update the language.
+           if ($paragraphs_entity->hasTranslation($form_state->get('langcode'))) {
