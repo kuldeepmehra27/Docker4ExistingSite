@@ -44,7 +44,7 @@ Docker4ExistingSite # Main repo
 	 ⠿ Volume "drupal8_core"      Created         0.0s
 	 ⠿ Container drupal8-PMA      Started         2.4s
 	 ⠿ Container drupal8-db       Started         2.3s
-	 ⠿ Container drupal8          Started
+	 ⠿ Container drupal8          Started         2.9s
      ```
   
    **Note:** Run this command at first/main level of repo.

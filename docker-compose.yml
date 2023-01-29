@@ -71,8 +71,8 @@ services:
       UPLOAD_LIMIT: "${PMA_UPLOAD_LIMIT}"
     ports:
       - "${HOST_PMA_PORT}:80"
-    # volumes:
-    #  - /sessions
+    volumes:
+      - /sessions
     #  - ./config/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
     restart: "unless-stopped" # on, always, on-failure, unless-stopped
     networks:
