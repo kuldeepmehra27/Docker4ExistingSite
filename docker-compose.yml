@@ -1,0 +1,99 @@
+version: '3'
+services:
+# Pull image of mariadb
+  db:
+    image: "${MARIADB}"
+    container_name: "${COMPOSE_PROJECT_NAME}-db"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_ROOT_HOST: localhost
+      #MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      #MYSQL_PASSWORD_FILE: /run/secrets/db_password
+    volumes:
+      - ./${COMPOSE_PROJECT_NAME}/DockerData/data/dump:/docker-entrypoint-initdb.d
+      #- ./${COMPOSE_PROJECT_NAME}/DockerData/data/dump/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+      - ./${COMPOSE_PROJECT_NAME}/DockerData/data/db:/var/lib/mysql
+    restart: "on-failure"
+    ports:
+      - "${HOST_MYSQL_PORT}:3306"
+    secrets:
+      - db_root_password
+      - db_password
+    networks:
+      - drupal8-network 
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+# Setup drupal
+  drupal:
+    container_name: ${COMPOSE_PROJECT_NAME}
+    build:
+      context: ./${COMPOSE_PROJECT_NAME}
+      dockerfile: Dockerfile
+    volumes:
+      - core:/var/www/html/core
+      - vendor:/var/www/html/vendor
+      - modules:/var/www/html/modules
+      - themes:/var/www/html/themes
+      - profiles:/var/www/html/profiles
+      - sites:/var/www/html/sites
+      #- html:/var/www/html
+    extra_hosts:
+     - "${VIRTUAL_HOST_NAME}:host-gateway"
+    ports:
+      - "${HOST_APACHE_HTTP_PORT}:80"
+    hostname: "${HOST_NAME}"
+    environment:
+      VIRTUAL_HOST: "${VIRTUAL_HOST_NAME}"
+      VIRTUAL_PORT: "${HOST_APACHE_HTTP_PORT}"
+    restart: "on-failure"
+    depends_on:
+      - db
+    links:
+      - db
+      - db:database
+    networks:
+      - drupal8-network 
+
+# Pull image of phpmyadmin
+  phpmyadmin:
+    image: ${PHPMYADMIN}
+    container_name: "${COMPOSE_PROJECT_NAME}-PMA"
+    environment:
+      PMA_HOST: db
+      #PMA_USER: "${MYSQL_USER}"
+      #PMA_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MEMORY_LIMIT: "${PMA_MEMORY_LIMIT}"
+      UPLOAD_LIMIT: "${PMA_UPLOAD_LIMIT}"
+    ports:
+      - "${HOST_PMA_PORT}:80"
+    # volumes:
+    #  - /sessions
+    #  - ./config/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+    restart: "unless-stopped" # on, always, on-failure, unless-stopped
+    networks:
+      - drupal8-network 
+
+networks:
+  drupal8-network:
+    name: drupal8_network
+
+secrets:
+  db_password:
+    file: ./${COMPOSE_PROJECT_NAME}/DockerData/credentials/db_password.txt
+  db_root_password:
+    file: ./${COMPOSE_PROJECT_NAME}/DockerData/credentials/db_root_password.txt
+
+volumes:
+  db:
+  core:
+  vendor:
+  modules:
+  themes:
+  profiles:
+  sites:
