@@ -31,9 +31,8 @@ Docker4ExistingSite # Main repo
      $ **docker compose up -d --build**
      
      It will return following results:
-     
      ```
-	[+] Running 6/6
+     [+] Running 6/6
 	 ⠿ Network drupal8_network    Created              0.0s
 	 ⠿ Volume "drupal8_codebase"  Created              0.0s
 	 ⠿ Volume "drupal8_dbdata"    Created              0.0s
