@@ -11,7 +11,6 @@ Docker4ExistingSite # Main repo
     |   ├── <b>DockerData</b>
     │   |   ├── credentials # This contain password txt file
     │   |   ├── data
-    |   |   |   ├── db # This is for mount database
     |   |   |   └── dump # This contain sql & other files
     │   |   └── docker-configs
     |   └── <b>Dockerfile</b> # Project docker file
@@ -34,17 +33,13 @@ Docker4ExistingSite # Main repo
      It will return following results:
      
      ```
-     [+] Running 10/10
-	 ⠿ Network drupal8_network    Created         0.0s
-	 ⠿ Volume "drupal8_vendor"    Created         0.0s
-	 ⠿ Volume "drupal8_modules"   Created         0.0s
-	 ⠿ Volume "drupal8_themes"    Created         0.0s
-	 ⠿ Volume "drupal8_profiles"  Created         0.0s
-	 ⠿ Volume "drupal8_sites"     Created         0.0s
-	 ⠿ Volume "drupal8_core"      Created         0.0s
-	 ⠿ Container drupal8-PMA      Started         2.4s
-	 ⠿ Container drupal8-db       Started         2.3s
-	 ⠿ Container drupal8          Started         2.9s
+	[+] Running 6/6
+	 ⠿ Network drupal8_network    Created              0.0s
+	 ⠿ Volume "drupal8_codebase"  Created              0.0s
+	 ⠿ Volume "drupal8_dbdata"    Created              0.0s
+	 ⠿ Container drupal8-db       Started              4.2s
+	 ⠿ Container drupal8-PMA      Started              4.1s
+	 ⠿ Container drupal8          Started              4.9s
      ```
   
    **Note:** Run this command at first/main level of repo.
@@ -72,9 +67,7 @@ Docker4ExistingSite # Main repo
      
   6. If we updated any module or theme files so we need to rebuild conainter using below command we can rebuild container
   
-     $ **docker compose build**
-     
-     **Note:** If face this issue failed to solve: error from sender: open /var/www/html/Docker4ExistingSite/drupal8/DockerData/data/db/drupal8: permission denied go to this location **/Docker4ExistingSite/drupal8/DockerData/data/db** and remove all files and dirs.
+     $ **docker compose build up -d --build**
      
   7. To down docker site, remove volume & network use below command
   
