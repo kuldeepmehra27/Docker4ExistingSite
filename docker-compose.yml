@@ -56,7 +56,6 @@ services:
       - db
     links:
       - db
-      - db:database
     networks:
       - drupal8-network 
 
