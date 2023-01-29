@@ -20,7 +20,14 @@ ENV APACHE_CONFDIR=/etc/apache2
 ENV APACHE_ENVVARS=/etc/apache2/envvars
 RUN chown -R www-data:www-data /var/www/html && \
     chown -R www-data:www-data /etc/apache2/ && \
-    chown -R www-data:www-data /var/log/apache2 && \
+    chown -R www-data:www-data /var/log/apache2
+
+# This is resolve 404 isseue
+RUN echo "\n<Directory /var/www/>" >> /etc/apache2/apache2.conf && \
+    echo "\t Options Indexes FollowSymLinks" >> /etc/apache2/apache2.conf && \
+    echo "\t AllowOverride All" >> /etc/apache2/apache2.conf && \
+    echo "\t Require all granted" >> /etc/apache2/apache2.conf && \
+    echo "</Directory>" >> /etc/apache2/apache2.conf &&\
     echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Enable apache modules
