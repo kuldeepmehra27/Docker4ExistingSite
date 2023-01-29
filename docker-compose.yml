@@ -15,8 +15,8 @@ services:
     volumes:
       - ./${COMPOSE_PROJECT_NAME}/DockerData/data/dump:/docker-entrypoint-initdb.d
       #- ./${COMPOSE_PROJECT_NAME}/DockerData/data/dump/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
-      - ./${COMPOSE_PROJECT_NAME}/DockerData/data/db:/var/lib/mysql
-    restart: "on-failure"
+      - dbdata:/var/lib/mysql
+    restart: "always"
     ports:
       - "${HOST_MYSQL_PORT}:3306"
     secrets:
@@ -36,13 +36,8 @@ services:
       context: ./${COMPOSE_PROJECT_NAME}
       dockerfile: Dockerfile
     volumes:
-      - core:/var/www/html/core
-      - vendor:/var/www/html/vendor
-      - modules:/var/www/html/modules
-      - themes:/var/www/html/themes
-      - profiles:/var/www/html/profiles
-      - sites:/var/www/html/sites
-      #- html:/var/www/html
+      - codebase:/var/www/html
+      #- ./${COMPOSE_PROJECT_NAME}:/var/www/html
     extra_hosts:
      - "${VIRTUAL_HOST_NAME}:host-gateway"
     ports:
@@ -51,7 +46,7 @@ services:
     environment:
       VIRTUAL_HOST: "${VIRTUAL_HOST_NAME}"
       VIRTUAL_PORT: "${HOST_APACHE_HTTP_PORT}"
-    restart: "on-failure"
+    restart: "always"
     depends_on:
       - db
     links:
@@ -89,10 +84,7 @@ secrets:
     file: ./${COMPOSE_PROJECT_NAME}/DockerData/credentials/db_root_password.txt
 
 volumes:
-  db:
-  core:
-  vendor:
-  modules:
-  themes:
-  profiles:
-  sites:
+  dbdata:
+    driver: local
+  codebase:
+    driver: local

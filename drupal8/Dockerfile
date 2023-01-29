@@ -34,10 +34,8 @@ RUN echo "\n<Directory /var/www/>" >> /etc/apache2/apache2.conf && \
 RUN a2enmod rewrite && a2enmod proxy
 
 # Virtual host configs
-RUN a2dissite 000-default.conf && \
-    rm -rf /etc/apache2/sites-enabled/000-default.conf && \
-    rm -rf /etc/apache2/sites-available/000-default.conf 
-COPY ./DockerData/docker-configs/drupal8.conf /etc/apache2/sites-available/drupal8.conf 
+COPY ./DockerData/docker-configs/apache-drupal8.conf /etc/apache2/sites-available/000-default.conf
+RUN a2ensite 000-default.conf
 RUN service apache2 restart && bash
 
 # Remove apache default index html file
